@@ -1,0 +1,57 @@
+<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+  <!-- Brand -->
+  <a class="navbar-brand" href="#">
+    <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Logo" style="width: 40px"/>
+  </a>
+
+  <!-- Toggler/collapsibe Button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- Navbar links -->
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link {% if 'category_id' not in request.args %}active {% endif %}" href="/">Trang chu</a>
+      </li>
+      {% for c in categories %}
+      <li class="nav-item {% if 'category_id' in request.args and c.id == request.args.category_id|int %}active {% endif %} ">
+        <a class="nav-link" href="{{ url_for('home', category_id = c.id) }}">{{c.name}}</a>
+      </li>
+      {% endfor %}
+      {% if current_user.is_authenticated %}
+      <li class="nav-item ">
+        <a class="nav-link text-info" href="{{ url_for('home') }}">
+          {% if current_user.avatar %}
+            <img src="{{ current_user.avatar }}" class="rounded-circle" width="30" alt="{{ current_user.name }}"/>
+          {% else %}
+            <img src="{{ url_for('static', filename='images/avatar_static.png') }}" class="rounded-circle" width="30" alt="{{ current_user.name }}"/>
+          {% endif %}
+          {{ current_user.username }}
+        </a>
+      </li>
+      <li class="nav-item ">
+        <a class="nav-link text-success" href="{{ url_for('user_signout') }}">Dang xuat</a>
+      </li>
+      {% else %}
+      <li class="nav-item ">
+        <a class="nav-link text-info" href="{{ url_for('user_register') }}">Dang ky</a>
+      </li>
+      <li class="nav-item ">
+        <a class="nav-link text-success" href="{{ url_for('user_signin') }}">Dang nhap</a>
+      </li>
+      {% endif %}
+      <li class="nav-item ">
+        <a class="nav-link text-success" href="{{ url_for('cart') }}">
+          Gio hang <span class="badge badge-info" id="cartCounter">{{ cart_stats.total_quantity }}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <form class="form-inline">
+    <input class="form-control mr-sm-2" name="keyword" type="text" placeholder="Nhap tu khoa...">
+    <button class="btn btn-success" type="submit">Tim kiem</button>
+  </form>
+</nav>

@@ -1,0 +1,25 @@
+{% extends 'layout/base.html' %}
+{% block title %}Dang nhap{% endblock %}
+{% block content %}
+<h1 class="text-center text-danger">DANG NHAP</h1>
+{% if err_msg %}
+<div class="alert alert-danger">
+    <h3>{{ err_msg }}</h3>
+</div>
+{% endif %}
+
+<form method="post">
+    <div class="form-group">
+        <label for="username">User name</label>
+        <input type="text" class="form-control" id="username"
+               name="username" placeholder="Nhap username..." required>
+    </div>
+    <div class="form-group">
+        <label for="pass">Mat khau</label>
+        <input type="password" class="form-control" id="pass" name="password">
+    </div>
+    <input type="submit" value="Dang nhap" class="btn btn-danger">
+
+</form>
+<br><br>
+{% endblock %}
