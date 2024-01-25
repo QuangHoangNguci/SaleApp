@@ -1,12 +1,12 @@
 import math
 
-from flask import render_template, request, redirect, url_for, session, jsonify
+from flask import render_template, request, redirect, url_for, session, jsonify, flash
 from app import app, login
 import utils
 import hashlib
 import cloudinary.uploader
 from flask_login import login_user, logout_user, login_required
-
+from app.models import UserRole
 @app.route('/')
 def home():
     # lay category_id tu URL
@@ -52,18 +52,35 @@ def user_register():
 def user_signin():
     err_msg = ''
     if request.method.__eq__('POST'):
-        username = request.form.get('username')
-        password = request.form.get('password')
-        user = utils.check_login(username=username, password=password)
-        if user:
-            login_user(user=user)
-            next = request.args.get('next', 'home')
-            return redirect(url_for(next))
-        else:
-            err_msg = 'Sai thong tin dang nhap!!!'
+        try:
+            username = request.form.get('username')
+            password = request.form.get('password')
+            user = utils.check_login(username=username, password=password)
+            if user:
+                login_user(user=user)
+                next = request.args.get('next', 'home')
+                return redirect(url_for(next))
+            else:
+                err_msg = 'Sai thong tin dang nhap!!!'
+        except Exception as ex:
+            err_msg = str(ex)
 
     return render_template('login.html', err_msg=err_msg)
 
+@app.route('/admin_login', methods = ['post'])
+def signin_admin():
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    user = utils.check_login(username=username,
+                             password=password,
+                             role=UserRole.ADMIN)
+    if user:
+        login_user(user=user)
+        return redirect('/admin')
+    else:
+        flash('Đăng nhập không thành công. Vui lòng kiểm tra lại tên đăng nhập và mật khẩu.', 'error')
+        return redirect('/admin')
 @app.route('/user_logout')
 def user_signout():
     logout_user()
@@ -143,4 +160,4 @@ def product_detail(product_id):
 if __name__ == '__main__':
     from app.admin import *
 
-    app.run(debug=True)
+    app.run(port=8000,debug=True)
